@@ -1,4 +1,6 @@
+from unicodedata import name
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -26,3 +28,11 @@ async def remove():
 async def saudacao(name: str):
     text = f'Olá {name}, é um prazer vê-lo novamente!'
     return text
+
+class Products(BaseModel):
+    name: str
+    price: float
+
+@app.post("/products")
+async def products(product: Products):
+    return {"mensagem": f"O produto {product.name} de valor R${product.price} foi cadastrado com sucesso!"}
