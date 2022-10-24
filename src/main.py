@@ -1,8 +1,20 @@
 from unicodedata import name
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List 
 from pydantic import BaseModel
 
 app = FastAPI()
+
+origins = ["http://localhost:5500/"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def root():
@@ -36,3 +48,14 @@ class Products(BaseModel):
 @app.post("/products")
 async def products(product: Products):
     return {"mensagem": f"O produto {product.name} de valor R${product.price} foi cadastrado com sucesso!"}
+
+bank: List[Products] = []
+
+@app.get('/products')
+def list_products():
+    return bank
+
+@app.post('/products')
+def create_products(product: Products):
+    bank.append(product)
+    return None
